@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca Virtual</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="encabezado"> 
+        <h1>BIBLIOTECA VIRTUAL</h1>
+    </div>
+
+    <button onclick="mostrarLibro()">Agregar Libro</button>
+        
+        <h2>Lista de Libros</h2>
+
+        <div class="libros" id="listaLibros">
+                <div id="contenedor"></div>
+                <button onclick="mostrarInfo()">Ver lista de libros</button>
+    
+    </div>
+    </div>
+    <div class="contenedor">
+        <div class="formulario" id="formulario" style="display: none;">
+            <h2>Agregar un Nuevo Libro</h2>
+            <input type="text" id="nombre" placeholder="Nombre del libro" required>
+            <input type="text" id="autor" placeholder="Autor" required>
+            <input type="number" id="capitulos" placeholder="Cantidad de capítulos" required>
+            <textarea id="texto" placeholder="Texto del libro"></textarea>
+            <button onclick="IngresarLibro()">Guardar</button>
+            
+        </div>
+    <script src="script.js"></script>
+</body>
+</html>
