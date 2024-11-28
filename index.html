@@ -4,33 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biblioteca Virtual</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="estilos/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="encabezado"> 
-        <h1>BIBLIOTECA VIRTUAL</h1>
-    </div>
-
-    <button onclick="mostrarLibro()">Agregar Libro</button>
-        
-        <h2>Lista de Libros</h2>
-
-        <div class="libros" id="listaLibros">
-                <div id="contenedor"></div>
-                <button onclick="mostrarInfo()">Ver lista de libros</button>
-    
-    </div>
-    </div>
-    <div class="contenedor">
-        <div class="formulario" id="formulario" style="display: none;">
-            <h2>Agregar un Nuevo Libro</h2>
-            <input type="text" id="nombre" placeholder="Nombre del libro" required>
-            <input type="text" id="autor" placeholder="Autor" required>
-            <input type="number" id="capitulos" placeholder="Cantidad de capítulos" required>
-            <textarea id="texto" placeholder="Texto del libro"></textarea>
-            <button onclick="IngresarLibro()">Guardar</button>
-            
+    <div class="container-fluid">
+        <div class="encabezado"> 
+            <h1>BIBLIOTECA VIRTUAL</h1>
         </div>
+        <div class="container-md"></div>
+            <h2>Lista de Libros</h2>
+            <div class="libros" id="listaLibros">
+                    <div id="contenedor"></div>
+                    <button type="button" class="btn btn-primary" onclick="mostrarInfo()">Ver lista de Libros</button>
+                    <button type="button" class="btn btn-primary" onclick="mostrarLibro()">Agregar Libro</button>
+                    <button type="button" class="btn btn-primary" onclick="borrar()">Eliminar Datos</button>
+        </div>
+        <div class="container-sm">
+            <div class="contenedor">
+                <div class="formulario" id="formulario" style="display: none;">
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Título: </label>
+                        <input type="email" class="form-control" id="nombre" placeholder="Título del Libro">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Autor: </label>
+                        <input type="text" class="form-control" id="autor" placeholder="Autor">
+                    </div>
+                    <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Capítulos: </label>
+                    <input type="number" class="form-control" id="capitulos" placeholder="Cantidad de capítulos">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlTextarea1" class="form-label">Contenido del Libro</label>
+                        <textarea class="form-control" id="texto" rows="10"></textarea>
+                    </div>
+                        <button onclick="IngresarLibro()">Guardar</button>
+                </div>
+                </div>
+            </div>
+        </div>  
     <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

@@ -1,4 +1,3 @@
-// Clase Comentario
 class Comentario {
     constructor(usuario, comentario) {
         this.usuario = usuario;
@@ -14,7 +13,6 @@ class Comentario {
     }
 }
 
-// Clase Libro
 class Libro {
     constructor(nombre, autor, capitulos, texto, kudos = 0) {
         this.nombre = nombre;
@@ -22,7 +20,8 @@ class Libro {
         this.capitulos = capitulos;
         this.texto = texto;
         this.kudos = kudos;
-        this.comentarios = [];  // Aquí guardamos las instancias de Comentario
+        this.kudosDado = false;
+        this.comentarios = [];
     }
 
     getNombre() {
@@ -59,14 +58,49 @@ class Libro {
     }
 
     darKudos() {
-        this.kudos++;
+        if (!this.kudosDado) { 
+            this.kudos++;
+            this.kudosDado = true;
+        }
+    }
+
+    toJSON() {
+        return {
+            nombre: this.nombre,
+            autor: this.autor,
+            capitulos: this.capitulos,
+            texto: this.texto,
+            kudos: this.kudos,
+            comentarios: this.comentarios,
+            kudosDado: this.kudosDado,
+        };
+    }
+
+    static fromJSON(data) {
+        const libro = new Libro(data.nombre, data.autor, data.capitulos, data.texto, data.kudos);
+        libro.kudosDado = data.kudosDado;
+        libro.comentarios = data.comentarios.map(comentario => new Comentario(comentario.usuario, comentario.comentario));
+        return libro;
     }
 }
 
-// Clase Biblioteca
 class Biblioteca {
     constructor() {
-        this.listaLibro = [];
+        this.listaLibro = this.cargarLibros(); 
+    }
+
+    cargarLibros() {
+        const librosData = localStorage.getItem('libros');
+        if (librosData) {
+            const libros = JSON.parse(librosData);
+            return libros.map(libroData => Libro.fromJSON(libroData));
+        }
+        return [];
+    }
+
+    guardarLibros() {
+        const librosData = JSON.stringify(this.listaLibro.map(Libro => Libro.toJSON()));
+        localStorage.setItem('libros', librosData);
     }
 
     getTodo() {
@@ -75,23 +109,27 @@ class Biblioteca {
 
     crearLibro(nuevoLibro) {
         this.listaLibro.push(nuevoLibro);
+        this.guardarLibros(); 
+    }
+
+    borrarLibros() {
+        this.listaLibro = [];
+        localStorage.removeItem('libros');
     }
 }
 
 var biblioteca = new Biblioteca();
 
-// Función para mostrar la información de todos los libros
 function mostrarInfo() {
     var lista = biblioteca.getTodo();
     var contenedor = document.getElementById("contenedor");
-    contenedor.innerHTML = ""; // Limpiar el contenedor antes de agregar los libros
+    contenedor.innerHTML = "";
 
     if (lista.length > 0) {
         lista.forEach(function(Libro, index) {
             var tarjeta = document.createElement("div");
             tarjeta.classList.add("tarjeta");
 
-            // Información básica del libro
             var nombre = document.createElement("h3");
             nombre.innerHTML = Libro.getNombre();
 
@@ -104,7 +142,6 @@ function mostrarInfo() {
             var kudos = document.createElement("p");
             kudos.innerHTML = "Kudos: " + Libro.getKudos();
 
-            // Información adicional (inicialmente oculta)
             var infoAdicional = document.createElement("div");
             infoAdicional.classList.add("info-adicional");
             infoAdicional.style.display = "none";
@@ -113,32 +150,39 @@ function mostrarInfo() {
             textoCompleto.innerHTML = "Texto completo: " + Libro.getTexto();
             infoAdicional.appendChild(textoCompleto);
 
-            // Botón para mostrar/ocultar información adicional
             var botonAmpliar = document.createElement("button");
             botonAmpliar.innerHTML = "Ampliar información";
             botonAmpliar.onclick = function() {
-                var tarjetas = document.querySelectorAll(".tarjeta");
-                tarjetas.forEach(function(tarjeta) {
-                    tarjeta.style.display = "none";
-                });
-
                 if (infoAdicional.style.display === "none") {
+                    var tarjetas = document.querySelectorAll(".tarjeta");
+                    tarjetas.forEach(function(tarjeta) {
+                        tarjeta.style.display = "none";
+                    });
+                    tarjeta.style.display = "block";
                     infoAdicional.style.display = "block";
                     botonAmpliar.innerHTML = "Ocultar información";
                 } else {
                     infoAdicional.style.display = "none";
                     botonAmpliar.innerHTML = "Ampliar información";
                 }
-
-                tarjeta.style.display = "block";
             };
 
-            // Contenedor para los comentarios
+            var botonKudos = document.createElement("button");
+            botonKudos.innerHTML = "Kudos <3";
+            botonKudos.onclick = function() {
+                if (!Libro.kudosDado) {
+                    Libro.darKudos();
+                    kudos.innerHTML = "Kudos: " + Libro.getKudos();
+                    biblioteca.guardarLibros();
+                } else {
+                    alert("Ya dejaste kudos!!");
+                }
+            };
+            infoAdicional.appendChild(botonKudos);
+
             var comentarios = document.createElement("div");
             comentarios.classList.add("comentarios");
             comentarios.style.display = "none";
-
-            // Mostrar los comentarios
             function actualizarComentarios() {
                 comentarios.innerHTML = "Comentarios:<br>";
                 Libro.getComentarios().forEach(function(comentario) {
@@ -146,7 +190,6 @@ function mostrarInfo() {
                 });
             }
 
-            // Botón para ver/ocultar comentarios
             var botonComentarios = document.createElement("button");
             botonComentarios.innerHTML = "Ver Comentarios";
             botonComentarios.onclick = function() {
@@ -162,48 +205,41 @@ function mostrarInfo() {
                 }
             };
 
-            // Formulario para agregar un nuevo comentario
             var comentariosFormulario = document.createElement("div");
             comentariosFormulario.style.display = "none";
             comentariosFormulario.innerHTML = `
                 <label for="usuario">Nombre de usuario:</label>
-                <input type="text" id="usuario" placeholder="Tu nombre" required>
+                <input type="text" id="usuario-${index}" placeholder="Tu nombre" required>
                 <br>
                 <label for="comentario">Comentario:</label>
-                <textarea id="comentario" placeholder="Escribe tu comentario aquí" required></textarea>
+                <textarea id="comentario-${index}" placeholder="Escribe tu comentario aquí" required></textarea>
                 <br>
-                <button id="agregarComentario">Agregar Comentario</button>
+                <button id="agregarComentario-${index}">Agregar Comentario</button>
             `;
 
-            var agregarComentarioBtn = comentariosFormulario.querySelector("#agregarComentario");
+            var agregarComentarioBtn = comentariosFormulario.querySelector(`#agregarComentario-${index}`);
             agregarComentarioBtn.onclick = function() {
-                var usuario = document.getElementById("usuario").value;
-                var comentario = document.getElementById("comentario").value;
+                var usuario = document.getElementById(`usuario-${index}`).value;
+                var comentario = document.getElementById(`comentario-${index}`).value;
                 if (usuario && comentario) {
-                    // Agregar el comentario
                     Libro.agregarComentario(usuario, comentario);
-
-                    // Actualizar la vista de comentarios
                     actualizarComentarios();
+                    biblioteca.guardarLibros();
                 } else {
                     alert("Por favor, ingresa un nombre de usuario y un comentario.");
                 }
             };
 
-            // Añadir el formulario de comentarios debajo del botón
-            tarjeta.appendChild(comentariosFormulario);
-            tarjeta.appendChild(botonComentarios);
-            tarjeta.appendChild(comentarios);
-            
-            // Añadir los elementos a la tarjeta
             tarjeta.appendChild(nombre);
             tarjeta.appendChild(autor);
             tarjeta.appendChild(capitulos);
             tarjeta.appendChild(kudos);
             tarjeta.appendChild(infoAdicional);
+            tarjeta.appendChild(comentarios);
+            tarjeta.appendChild(comentariosFormulario);
+            tarjeta.appendChild(botonComentarios);
             tarjeta.appendChild(botonAmpliar);
 
-            // Añadir la tarjeta al contenedor
             contenedor.appendChild(tarjeta);
         });
     } else {
@@ -227,3 +263,8 @@ function IngresarLibro() {
     document.getElementById("formulario").style.display = "none";
     mostrarInfo();
 }
+
+function borrar() {
+        if (confirm("Estás seguro de que deseas limpiar todos los libros?")) {
+            biblioteca.limpiarLibros();
+}}

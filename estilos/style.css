@@ -1,0 +1,30 @@
+
+.container-fluid{
+    margin-block-start: 3%;
+    margin-block-end: 3%;
+
+}
+.tarjeta {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px;
+    background-color: #f9f9f9;
+}
+
+h3 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+p {
+    margin: 4px 0;
+    font-size: 1em;
+}
+body{
+    background-color: rgb(248, 240, 255);
+}
+
+.libros {
+    margin-block-end: 3%;
+}
